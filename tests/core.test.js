@@ -1,4 +1,4 @@
-import {matchesLesson,missedChecks,practicePool,matchesPorts,completedCount} from '../src/learning.js';
+import {matchesLesson,missedChecks,practicePool,matchesPorts,completedCount,nextCheckIndex} from '../src/learning.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {lessons,domains,ports,questionFor} from '../src/data.js';
@@ -7,12 +7,12 @@ import {readState,accuracy,streak,localDate} from '../src/storage.js';
 
 test('curriculum has complete, unique lessons and balanced domain metadata',()=>{
  assert.equal(domains.reduce((n,d)=>n+d.weight,0),100);
- assert.equal(new Set(lessons.map(l=>l.id)).size,41);
+ assert.equal(new Set(lessons.map(l=>l.id)).size,43);
  for(const d of domains)assert.ok(lessons.some(l=>l.domain===d.id));
  for(const l of lessons){assert.ok(l.title.length>3);for(const field of ['big','taglish','analogy','exam','tech','explanation','tip'])assert.ok(l[field]?.length>15,`${l.id}: ${field}`);assert.ok(l.flow.length>=3);}
 });
-test('all 123 original checks have a single correct choice after rotation',()=>{
- assert.equal(questionCount,123);
+test('all 129 original checks have a single correct choice after rotation',()=>{
+ assert.equal(questionCount,129);
  for(const l of lessons){assert.equal(checksFor(l).length,3);for(const check of checksFor(l)){const q=questionFor(check);assert.equal(q.choices.filter(c=>c.correct).length,1);assert.equal(q.choices.find(c=>c.correct).text,check.options[0]);assert.equal(new Set(check.options).size,3);assert.ok(check.explanation.length>40);}}
 });
 test('port scope includes NetBIOS and does not omit paired service ports',()=>{
@@ -38,7 +38,7 @@ test('streak uses local calendar days and permits an unfinished current day',()=
 });
 
  test('guided lessons include substantive teaching, labs and distinct checks',()=>{
- const guided=lessons.filter(l=>l.steps);assert.equal(guided.length,26);
+ const guided=lessons.filter(l=>l.steps);assert.equal(guided.length,43);
  for(const l of guided){assert.equal(l.goals.length,3);assert.ok(l.steps.length>=4);assert.ok(l.terms.length>=3);assert.ok(l.lab.task.length>60);assert.ok(l.lab.answer.length>100);assert.equal(new Set(checksFor(l).map(q=>q.question)).size,3);}
  });
 
@@ -52,7 +52,7 @@ test('search finds expanded vocabulary and lab content',()=>{
  assert.equal(matchesLesson(lessons[0],'nonexistentwordxyz'),false);
 });
 test('practice includes all checks and reviews the exact missed question',()=>{
- assert.equal(practicePool(lessons,checksFor,[],'0').length,123);
+ assert.equal(practicePool(lessons,checksFor,[],'0').length,129);
  const history=[{id:'dns',context:'lesson',check:0,correct:false},{id:'dns',context:'lesson',check:1,correct:true}];
  assert.deepEqual(missedChecks(history,'dns'),[0]);
  const pool=practicePool(lessons,checksFor,history,'wrong');assert.equal(pool.length,1);assert.equal(pool[0].checkSlot,0);
@@ -89,3 +89,27 @@ test('every related lesson exists and all new checks participate in search and d
 });
 
 
+
+ test('search includes objective mappings, diagram text, and scenario explanations',()=>{
+  const lesson={title:'Sample',objective:'9.8',flow:['unique-diagram-clue'],question:'unique-question-clue',explanation:'unique-explanation-clue',checks:[['unique-extra-check']]};
+  for(const query of ['9.8','unique-diagram-clue','unique-question-clue','unique-explanation-clue','unique-extra-check'])assert.ok(matchesLesson(lesson,query),query);
+ });
+ test('resume selects the first unanswered check without confusing practice with lesson participation',()=>{
+  const answers=[{id:'dns',context:'lesson',check:0},{id:'dns',context:'practice',check:1},{id:'dns',context:'lesson-previous',check:2}];
+  assert.equal(nextCheckIndex(answers,'dns'),1);
+  answers.push({id:'dns',context:'lesson',check:2});assert.equal(nextCheckIndex(answers,'dns'),1);
+  answers.push({id:'dns',context:'lesson',check:1});assert.equal(nextCheckIndex(answers,'dns'),0);
+  assert.equal(nextCheckIndex(answers,'dhcp'),0);
+  assert.equal(nextCheckIndex([{id:'dns',context:'lesson',check:null}],'dns'),1);
+ });
+ test('new lessons are appended and every lesson has a complete worked workshop',()=>{
+  assert.equal(lessons.find(l=>l.id==='usb-docks').number,41);
+  assert.equal(lessons.find(l=>l.id==='containers-vdi').number,42);
+  assert.equal(lessons.find(l=>l.id==='mobile-management').number,43);
+  for(const l of lessons){
+   assert.ok(l.steps.length>=4,l.id);
+   for(const [title,body] of l.steps){assert.ok(title.length>5,l.id);assert.ok(body.length>100,l.id);}
+   assert.equal(l.goals.length,3);assert.ok(l.confusion.length>40,l.id);
+   assert.ok(l.lab.task.length>60,l.id);assert.ok(l.lab.answer.length>100,l.id);
+  }
+ });

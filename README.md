@@ -1,6 +1,6 @@
 # Core One — CompTIA A+ mentor
 
-A local study app with separate HTML, CSS, JavaScript modules, Tailwind CSS, Vite, and npm configuration. No account or backend is required.
+An independent Core 1 (220-1201 V15) study app with **43 guided lessons and 129 original questions**. Every lesson includes English and Taglish explanations, an analogy, learning goals, guided teaching, vocabulary, a worked paper lab, and three knowledge checks. No account or backend is required.
 
 ## Run
 
@@ -9,7 +9,9 @@ npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite. For a production build:
+Open the local URL printed by Vite. Use an HTTP server; opening index.html directly does not compile Tailwind or resolve package imports.
+
+## Verify and build
 
 ```sh
 npm run check
@@ -18,77 +20,66 @@ npm run build
 npm run preview
 ```
 
-Serve the application through Vite or another HTTP server; opening `index.html` directly does not compile Tailwind or resolve npm imports.
+The unit tests cover content integrity, question rotation, practice selection, search, resume behavior, persistence recovery, completion totals, port parsing, and local-calendar streaks.
 
-## Files
+The browser audit is `audit/browser-check.mjs`. Run a production preview first, then execute the audit with an installed Playwright runtime. It uses an isolated browser context and does not modify personal browser progress.
 
-- `index.html`: document shell and entry point
-- `src/styles.css`: Tailwind import, design tokens, custom components, dark theme, responsive layouts
-- `src/app.js`: navigation and study interactions
-- `src/data.js`: 38 original lessons, 14 protocol entries, domain metadata and sources
-- `src/checks.js`: three knowledge checks per lesson, 114 original questions total
-- `src/storage.js`: persistence, accuracy and local-calendar streak calculations
-- `tests/core.test.js`: content integrity, scoring, storage recovery, and date-boundary checks
-- `vite.config.js`: Vite and Tailwind plugin
-- `package.json` / `package-lock.json`: npm commands and dependencies
+Optional environment variables:
 
-## Interactions
+- `PLAYWRIGHT_MODULE`: absolute path to Playwright’s index.mjs when it is not locally installed.
+- `BROWSER_EXECUTABLE`: path to a compatible Chromium executable.
+- `PREVIEW_URL`: preview address; defaults to http://127.0.0.1:4173/.
 
-Desktop sidebar and mobile bottom navigation; searchable lesson and port content; domain filters; five lesson sections; English, Taglish, and technician explanations; original analogies; concept flow diagrams; three scenario/concept checks per lesson with explanations; bookmarks; autosaved personal notes; flashcard reveal, domain selection, shuffle and self-ratings; ports recall; randomized five-question scenario sessions; missed-topic review; progress export; light/dark theme.
+The audit renders all five sections of every lesson, completes all 129 checks, and exercises notes, bookmarks, search, ports, flashcards, practice, storage failure, mobile navigation, and dark mode.
 
-Swipe left/right on the lesson content panel or flashcard. Visible Previous/Next buttons provide the same navigation. Arrow keys also work when focus is not in a control. Vertical scrolling remains available. Press `/` outside a control to focus search; Escape dismisses search/navigation. Reduced-motion preferences are respected.
+## Learning features
 
-## Learning and scoring boundaries
+- Course grouped by exam domain, with estimated study time and participation progress.
+- Search across teaching, vocabulary, objective mappings, labs, diagrams, and question explanations.
+- Five lesson sections: Understand, Visualize, Apply, Exam essentials, and Knowledge check.
+- Direct question navigation and resume at the first unanswered check of the current attempt.
+- Bookmarks, autosaved field notes, missed-question review, and JSON progress export.
+- Flashcards with domain filters and manual self-ratings.
+- Port recall accepts equivalent complete lists and ranges; port search opens the matching exercise.
+- Randomized practice sessions of up to five questions, with domain or missed-question selection.
+- Desktop and mobile navigation, swipe controls, keyboard section navigation, light/dark themes, and reduced-motion support.
 
-This is a **starter study course**, not full coverage of the entire certification. Lesson completion requires answering all three checks, not getting every answer correct. Answers and explanations remain available. Repeated answers are included in practice accuracy and clearly described as such. No official exam-score or readiness prediction is calculated. Flashcard ratings are manual; this release does not implement scheduled spaced repetition.
+Press / outside an interactive control to focus search. Escape dismisses search and the mobile navigation. Arrow keys move between lesson sections or flashcards when focus is outside interactive controls.
 
-Full objective coverage, a full-length timed exam simulator, performance-based labs, and detailed cable/motherboard visual trainers remain future work. No inactive navigation entries advertise these as finished features.
+## Source layout
 
-Progress, notes, ratings and bookmarks are stored in this browser. Clearing site storage removes them. JSON export is available; import and cross-device synchronization are not implemented. If browser storage is unavailable, the app warns and keeps a temporary in-memory session.
+- `src/app.js`: routes, rendering, inputs, and study interactions.
+- `src/styles.css`: Tailwind import, layout, components, themes, and responsive rules.
+- `src/data.js`: stable lesson IDs and ordering, domain metadata, protocol reference, and source links.
+- `src/foundation-workshops.js`: guided expansions for the original 15 short lessons.
+- `src/extended-lessons.js`: containers/VDI and managed mobile devices.
+- Other `src/*lessons.js` and `src/*workshops.js`: original topic-specific teaching and scenarios.
+- `src/checks.js`: three questions per lesson and stable answer rotation.
+- `src/learning.js`: search, practice selection, check resume, and port matching.
+- `src/storage.js`: saved-state validation, accuracy, and study streaks.
+- `tests/core.test.js`: unit and curriculum integrity tests.
+- `audit/`: browser verification script and dated audit records.
 
-## Accuracy audit
+## Coverage and scoring
 
-Primary source: [CompTIA A+ 220-1201 V15 objectives, version 3.0](https://assets.ctfassets.net/82ripq7fjls2/1oSdlyujpaX3GrM0rir6Ge/91afb2be72785281e8fb4c0d9a70c6f4/CompTIA-A-220-1201-Exam-Objectives-3.0.pdf).
+The course teaches selected concepts across all five Core 1 domains. It does not claim complete objective coverage. Study times are estimates, and labs are paper exercises with worked solutions. A full timed exam, interactive performance-based labs, and detailed visual hardware trainers are not included.
 
-- Corrected the supplied brief's methodology claim: the named method is supporting practice, explicitly not a formal V15 objective. Planning/implementation is one of six steps.
-- Included NetBIOS 137–139 in the objective 2.1 ports reference; the brief omitted it.
-- Passing score is 675 on a 100–900 scale, not a raw percentage.
-- Distinguished M.2 shape, SATA/PCIe interfaces, and NVMe protocol.
-- Qualified DNS diagnosis: reachable IP plus failed name lookup is a clue, not proof every internet service works.
-- Clarified TCP does not itself encrypt and UDP is not categorically faster.
-- Included transport nuance for DNS, RDP, and HTTP/3.
-- Marked US-specific 2.4 GHz channel guidance and qualified band-performance claims.
-- Included safe handling of swollen batteries and power supplies; modular PSU cables require explicit compatibility.
-- CPU socket fit alone is not sufficient compatibility; USB-C shape does not guarantee video.
+Completion records answering all three lesson checks, not necessarily answering correctly. Repeated answers count in practice accuracy. The app does not predict an official scaled score or exam readiness. Flashcard ratings are manual; scheduled spaced repetition is not implemented.
 
-[Professor Messer's official 220-1201 course](https://www.professormesser.com/free-a-plus-training/220-1201/220-1201-video/220-1201-training-course/) is linked as a companion resource. No scripts, paid notes, or exam questions were copied. This app has no affiliation with or endorsement by CompTIA or Professor Messer.
+The named troubleshooting methodology is supporting practice, explicitly excluded as a formal V15 objective. Full A+ certification requires Core 1 and Core 2; this app focuses on Core 1.
 
-## Guided course expansion
+## Data
 
-Five additional guided lessons cover mobile synchronization, VLANs and VPNs, RAID, cloud deployment, and display diagnosis. Each includes learning goals, four teaching steps, vocabulary, common confusions, a paper mini lab with a revealable worked solution, and three original checks. Labs use the existing autosaved field notes. These are text lessons, not recorded video lessons or a complete exam-preparation course.
+Progress, notes, bookmarks, and ratings remain in this browser. Clearing site data removes them. JSON export is available; import and cross-device synchronization are not implemented. When storage writes fail, the app retains changes only for the current session and reports that they were not saved. Existing lesson IDs and the original 123 questions remain stable through this expansion.
 
-Four further guided lessons cover networking tools (2.8), cable selection (3.2), printer installation (3.7), and printer troubleshooting and maintenance (5.6 / 3.8). Content lives in `src/practical-lessons.js` and joins the same lesson, flashcard, practice, search, and progress flows. 
+## Sources
 
-Three further guided lessons cover network host services (2.3), internet and network types (2.7), and storage troubleshooting (5.2). Content is in `src/service-lessons.js`. The course now includes 23 guided lessons and 15 concise foundation lessons, with 114 checks total.
+- [Official Core 1 V15 objectives, document version 3.0](https://assets.ctfassets.net/82ripq7fjls2/1oSdlyujpaX3GrM0rir6Ge/91afb2be72785281e8fb4c0d9a70c6f4/CompTIA-A-220-1201-Exam-Objectives-3.0.pdf)
+- [Microsoft: containers and virtual machines](https://learn.microsoft.com/en-us/virtualization/windowscontainers/about/containers-vs-vm)
+- [Microsoft: virtual desktop overview](https://learn.microsoft.com/en-us/azure/virtual-desktop/overview)
+- [Microsoft: shared cloud responsibilities](https://learn.microsoft.com/en-us/azure/security/fundamentals/shared-responsibility)
+- [Microsoft: endpoint and application management](https://learn.microsoft.com/en-us/intune/fundamentals/what-is-intune)
+- [IETF: TCP specification, RFC 9293](https://www.rfc-editor.org/rfc/rfc9293.html)
+- [Professor Messer’s 220-1201 course](https://www.professormesser.com/free-a-plus-training/220-1201/220-1201-video/220-1201-training-course/), linked as a companion resource.
 
-## Expanded networking workshops
-
-DHCP, DNS, IPv4, and switching now have extended original instruction, worked examples, recap lists, and related-lesson links. Existing lesson IDs and saved progress are preserved. The course index groups lessons into expandable domain sections with estimated study time and completion counts. Each lesson also provides an expandable list of other lessons in its domain. Content is in `src/networking-workshops.js`.
-
-## Expanded hardware workshops
-
-Motherboard, CPU, and RAM lessons now include six teaching steps each, learning goals, vocabulary, worked paper labs, common confusions, recaps, and related lessons. Content is in src/hardware-workshops.js. The course has 38 lessons: 23 guided and 15 concise foundation lessons, with 114 checks. Existing lesson IDs and saved progress are preserved.
-
-## Essential lessons and bug audit
-
-Four additional guided lessons in `src/essential-lessons.js` cover IPv6 (2.6), display technologies (3.1), mobile-device troubleshooting (5.4), and Wi-Fi diagnosis (5.5 / 2.2). Each includes original English and Taglish explanations, vocabulary, a concept flow, a worked paper lab, a recap, related lessons, and three checks.
-
-Port recall accepts equivalent complete lists and ranges, including `137,138,139` for NetBIOS. Missing or extra ports remain incorrect. Notes report failed browser writes accurately. Completion totals ignore obsolete lesson IDs without deleting saved history.
-
-The reproducible browser audit is `audit/browser-check.mjs`. Run a production preview first, then use an installed Playwright module. Optional environment variables are `PLAYWRIGHT_MODULE` (absolute path to its `index.mjs`), `BROWSER_EXECUTABLE` (installed compatible Chromium), and `PREVIEW_URL` (defaults to `http://127.0.0.1:4173/`). It uses an isolated browser context and does not modify personal browser progress.
-
-
-
-## Component lesson expansion — September 12
-
-Added cooling, expansion-card installation, and USB/docking lessons in `src/component-lessons.js`. Each contains guided teaching, vocabulary, a worked paper lab, recap, related lessons, and three original knowledge checks. Current totals: 41 lessons, 26 guided workshops, and 123 questions. Existing IDs and saved progress remain compatible.
+Teaching and practice questions are original. Core One is not affiliated with or endorsed by CompTIA or Professor Messer. Device-specific service work depends on the manufacturer’s documentation.

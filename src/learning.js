@@ -1,13 +1,21 @@
 export function matchesLesson(lesson, query) {
- const text = [lesson.title, lesson.big, lesson.exam, lesson.tech, lesson.taglish,
+ const text = [lesson.title, lesson.objective, lesson.big, lesson.exam, lesson.tech, lesson.taglish,
   lesson.analogy, lesson.tip, lesson.goals, lesson.terms, lesson.steps,
-  lesson.summary, lesson.confusion, lesson.lab?.task, lesson.lab?.answer];
+  lesson.summary, lesson.confusion, lesson.flow, lesson.question, lesson.explanation,
+  lesson.checks, lesson.lab?.task, lesson.lab?.answer];
  return text.flat(Infinity).filter(Boolean).join(' ').toLowerCase().includes(query.trim().toLowerCase());
 }
 
 export function completedCount(completed, lessons) {
  const known = new Set(lessons.map(l => l.id));
  return new Set(completed.filter(id => known.has(id))).size;
+}
+
+// Resume the first unanswered check in the current attempt; completed attempts open at check 1.
+export function nextCheckIndex(answers, id, count = 3) {
+ const index = Array.from({length: count}, (_, i) => i).find(i =>
+  !answers.some(a => a.id === id && a.context === 'lesson' && (a.check ?? 0) === i));
+ return index ?? 0;
 }
 
 // Legacy practice records used only the first check and stored check:null.
