@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import {matchesLesson,missedChecks,practicePool,matchesPorts,completedCount,nextCheckIndex,shuffled,practiceSession} from '../src/learning.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -7,12 +8,12 @@ import {readState,accuracy,streak,localDate} from '../src/storage.js';
 
 test('curriculum has complete, unique lessons and balanced domain metadata',()=>{
  assert.equal(domains.reduce((n,d)=>n+d.weight,0),100);
- assert.equal(new Set(lessons.map(l=>l.id)).size,47);
+ assert.equal(new Set(lessons.map(l=>l.id)).size,65);
  for(const d of domains)assert.ok(lessons.some(l=>l.domain===d.id));
  for(const l of lessons){assert.ok(l.title.length>3);for(const field of ['big','taglish','analogy','exam','tech','explanation','tip'])assert.ok(l[field]?.length>15,`${l.id}: ${field}`);assert.ok(l.flow.length>=3);}
 });
-test('all 141 original checks have a single correct choice after rotation',()=>{
- assert.equal(questionCount,141);
+test('all 195 original checks have a single correct choice after rotation',()=>{
+ assert.equal(questionCount,195);
  for(const l of lessons){assert.equal(checksFor(l).length,3);for(const check of checksFor(l)){const q=questionFor(check);assert.equal(q.choices.filter(c=>c.correct).length,1);assert.equal(q.choices.find(c=>c.correct).text,check.options[0]);assert.equal(new Set(check.options).size,3);assert.ok(check.explanation.length>40);}}
 });
 test('port scope includes NetBIOS and does not omit paired service ports',()=>{
@@ -38,7 +39,7 @@ test('streak uses local calendar days and permits an unfinished current day',()=
 });
 
  test('guided lessons include substantive teaching, labs and distinct checks',()=>{
- const guided=lessons.filter(l=>l.steps);assert.equal(guided.length,47);
+ const guided=lessons.filter(l=>l.steps);assert.equal(guided.length,65);
  for(const l of guided){assert.equal(l.goals.length,3);assert.ok(l.steps.length>=4);assert.ok(l.terms.length>=3);assert.ok(l.lab.task.length>60);assert.ok(l.lab.answer.length>100);assert.equal(new Set(checksFor(l).map(q=>q.question)).size,3);}
  });
 
@@ -52,7 +53,7 @@ test('search finds expanded vocabulary and lab content',()=>{
  assert.equal(matchesLesson(lessons[0],'nonexistentwordxyz'),false);
 });
 test('practice includes all checks and reviews the exact missed question',()=>{
- assert.equal(practicePool(lessons,checksFor,[],'0').length,141);
+ assert.equal(practicePool(lessons,checksFor,[],'0').length,195);
  const history=[{id:'dns',context:'lesson',check:0,correct:false},{id:'dns',context:'lesson',check:1,correct:true}];
  assert.deepEqual(missedChecks(history,'dns'),[0]);
  const pool=practicePool(lessons,checksFor,history,'wrong');assert.equal(pool.length,1);assert.equal(pool[0].checkSlot,0);
@@ -130,4 +131,29 @@ test('practice lengths cap at available unique questions and accept only support
 test('infrastructure lessons append without moving existing lessons and join every practice flow',()=>{
  const ids=['poe','wireless-standards','firmware-boot','cloud-metering'];
  ids.forEach((id,i)=>{const l=lessons.find(l=>l.id===id);assert.equal(l.number,44+i);assert.equal(practicePool(lessons,checksFor,[],String(l.domain)).filter(q=>q.id===id).length,3);assert.ok(matchesLesson(l,l.terms[0][0]));});
+});
+
+test('the new teaching batch supplies 18 complete lessons across all five domains',()=>{
+ const added=lessons.slice(47);assert.equal(added.length,18);
+ assert.deepEqual([...new Set(added.map(l=>l.domain))].sort(),[1,2,3,4,5]);
+ for(const [index,l] of added.entries()){
+  assert.equal(l.number,48+index);assert.equal(l.summary.length,3);
+  assert.equal(l.checks.length,3);assert.ok(l.taglish.length>80,l.id);
+  assert.equal(practicePool(lessons,checksFor,[],String(l.domain)).filter(q=>q.id===l.id).length,3);
+  assert.ok(matchesLesson(l,l.lab.task));assert.ok(matchesLesson(l,l.terms[0][0]));
+ }
+});
+test('worked subnet and RAID examples match their stated arithmetic',()=>{
+ const subnet=lessons.find(l=>l.id==='subnet-lab');
+ const block=2**(32-26);const network=Math.floor(150/block)*block;
+ assert.equal(network,128);assert.equal(network+block-1,191);assert.equal(block-2,62);
+ for(const text of ['.128','.191','.129','.190'])assert.ok(subnet.lab.answer.includes(text));
+ const raid=lessons.find(l=>l.id==='raid-capacity');
+ const n=4,s=2;for(const capacity of [n*s,(n-1)*s,(n-2)*s,n*s/2])assert.ok(raid.lab.answer.includes(capacity+' TB'));
+ assert.match(raid.lab.answer,/A\+B loses both/);
+});
+
+test('previous 47 lesson IDs, numbering, questions, and choice order remain backward compatible',()=>{
+ const snapshot=lessons.slice(0,47).map(l=>[l.id,l.number,checksFor(l).map(q=>[q.number,q.question,q.options])]);
+ assert.equal(createHash('sha256').update(JSON.stringify(snapshot)).digest('hex'),'0e9681bc2ff5674e3e6ba738cfe465bc99ba2e007f8a6ff2940fb21893ea6206');
 });

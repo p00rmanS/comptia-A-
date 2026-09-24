@@ -1,6 +1,6 @@
 # Core One — CompTIA A+ mentor
 
-An independent Core 1 (220-1201 V15) study app with **47 guided lessons and 141 original questions**. Every lesson includes English and Taglish explanations, an analogy, learning goals, guided teaching, vocabulary, a worked paper lab, and three knowledge checks. No account or backend is required.
+An independent Core 1 (220-1201 V15) study app with **65 guided lessons and 195 original questions**. Every lesson includes English and Taglish explanations, an analogy, learning goals, guided teaching, vocabulary, a worked paper lab, and three knowledge checks. No account or backend is required.
 
 ## Run
 
@@ -30,7 +30,7 @@ Optional environment variables:
 - `BROWSER_EXECUTABLE`: path to a compatible Chromium executable.
 - `PREVIEW_URL`: preview address; defaults to http://127.0.0.1:4173/.
 
-The audit renders all five sections of every lesson, completes all 141 checks, and exercises notes, bookmarks, search, ports, flashcards, practice, storage failure, mobile navigation, and dark mode.
+The audit renders all five sections of every lesson, completes all 195 checks, and exercises notes, bookmarks, search, ports, flashcards, practice, storage failure, mobile navigation, and dark mode.
 
 ## Learning features
 
@@ -54,6 +54,7 @@ Press / outside an interactive control to focus search. Escape dismisses search 
 - `src/foundation-workshops.js`: guided expansions for the original 15 short lessons.
 - `src/extended-lessons.js`: containers/VDI and managed mobile devices.
 - `src/infrastructure-lessons.js`: PoE, wireless standards, UEFI, and cloud metering.
+- `src/deep-lessons.js` and `src/deep-*.js`: 18 additional mobile, networking, hardware, cloud, and diagnostic workshops.
 - Other `src/*lessons.js` and `src/*workshops.js`: original topic-specific teaching and scenarios.
 - `src/checks.js`: three questions per lesson and stable answer rotation.
 - `src/learning.js`: search, practice selection, check resume, and port matching.
@@ -88,3 +89,14 @@ Teaching and practice questions are original. Core One is not affiliated with or
 ## September 23 expansion
 
 Added four guided lessons and 12 original checks. Existing 43 lesson IDs and 129 questions retain their ordering. Practice now supports 5, 10, and 20 questions; Shuffle reorders the deck rather than jumping to a random card. See `audit/2026-09-23-audit.md` for sources and verification.
+
+## September 24 teaching expansion
+
+Added 18 guided workshops and 54 questions. Start with these sequences:
+
+- Network reasoning: IPv4 → Subnet lab → NAT/PAT → Email DNS → Network appliances → Time, logs and AAA → Cable faults.
+- Hardware diagnosis: RAM compatibility → RAM fault lab → Slow PC lab → Display connections → Display artifacts.
+- Storage and printing: RAID → RAID capacity math → Laser process → Printer technologies.
+- Mobile and cloud: SIM/eSIM → Location services → Camera/microphone → Virtual networking → Sync versus backup.
+
+Every new lesson contains a worked paper exercise and three original questions with explanations. Existing question identities and answer order are checked against the pre-expansion course to preserve saved progress. See audit/2026-09-24-audit.md for scope and sources.

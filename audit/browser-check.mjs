@@ -30,6 +30,7 @@ try {
   await route(`lesson/${id}`);await section(2);
   await page.getByText('Reveal the worked solution',{exact:true}).click();
   assert.ok(await page.getByText(lesson.lab.answer,{exact:true}).isVisible());
+  if(lesson.number%10===0)console.log(`Verified labs and checks through lesson ${lesson.number} of ${lessons.length}`);
   await section(4);
   for(let n=0;n<3;n++){
    const q=questionFor(checksFor(lesson)[n]);const answer=q.choices.findIndex(c=>c.correct);
@@ -101,17 +102,17 @@ try {
  await section(2);assert.match(await page.locator('#note-status').innerText(),/Not saved/);
  await page.locator('[data-action="clear-note"]').click();assert.match(await page.locator('#toast').innerText(),/only for this session/);
  await page.reload();assert.notEqual(await page.locator('#lesson-notes').inputValue(),'Temporary note');
- await section(1);await page.screenshot({path:'audit/2026-09-23-desktop.png',fullPage:true});
+ await route('lesson/subnet-lab');await section(2);await page.getByText('Reveal the worked solution',{exact:true}).click();await page.screenshot({path:'audit/2026-09-24-desktop.png',fullPage:true});
  await page.setViewportSize({width:390,height:844});await route('course');
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  await page.locator('[data-action="menu"]').click();assert.equal(await page.locator('.menu-btn').getAttribute('aria-expanded'),'true');
  await page.keyboard.press('Escape');assert.equal(await page.locator('.menu-btn').getAttribute('aria-expanded'),'false');
  for(const hash of ['dashboard','tools','flashcards','ports','practice','progress','saved','resources']){await route(hash);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),hash);}
- for(const id of ['poe','wireless-standards','firmware-boot','cloud-metering']){await route(`lesson/${id}`);for(let n=0;n<5;n++){await section(n);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${id} section ${n}`);}}
- await route('lesson/display-types');await section(3);
+ for(const id of lessons.slice(47).map(l=>l.id)){await route(`lesson/${id}`);for(let n=0;n<5;n++){await section(n);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${id} section ${n}`);}}
+ await route('lesson/raid-capacity');await section(2);await page.getByText('Reveal the worked solution',{exact:true}).click();
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  await page.locator('[data-action="theme"]').click();assert.ok(await page.locator('html.dark').count());
- await page.screenshot({path:'audit/2026-09-23-mobile.png',fullPage:true});
+ await page.screenshot({path:'audit/2026-09-24-mobile.png',fullPage:true});
  assert.deepEqual(errors,[]);
  console.log(JSON.stringify({passed:true,lessons:lessons.length,lessonSections:lessons.length*5,lessonChecks:lessons.length*3,consoleErrors:errors,viewports:['1440x1000','390x844']}));
 }finally{await browser.close();}
