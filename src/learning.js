@@ -18,6 +18,21 @@ export function nextCheckIndex(answers, id, count = 3) {
  return index ?? 0;
 }
 
+// Return a shuffled copy so course order and saved question identities stay unchanged.
+export function shuffled(items, random = Math.random) {
+ const result = [...items];
+ for (let i = result.length - 1; i > 0; i--) {
+  const j = Math.floor(random() * (i + 1));
+  [result[i], result[j]] = [result[j], result[i]];
+ }
+ return result;
+}
+
+export function practiceSession(pool, requested = 5, random = Math.random) {
+ const count = [5, 10, 20].includes(Number(requested)) ? Number(requested) : 5;
+ return shuffled(pool, random).slice(0, count);
+}
+
 // Legacy practice records used only the first check and stored check:null.
 export function missedChecks(answers, id) {
  const latest = new Map();

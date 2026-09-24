@@ -66,10 +66,33 @@ try {
  await route('flashcards');await page.locator('[data-action="flip"]').click();
  await page.locator('[data-action="card-known"]').click();
  assert.ok((await page.locator('main').innerText()).toLowerCase().includes(`card 2 of ${lessons.length}`));
+ await page.locator('[data-action="shuffle"]').click();
+ const seenCards=[];
+ for(let i=0;i<lessons.length;i++){seenCards.push(await page.locator('.flashcard h2').innerText());await page.locator('[data-action="card-next"]').click();}
+ assert.equal(new Set(seenCards).size,lessons.length);
+ assert.equal(await page.locator('.flashcard h2').innerText(),seenCards[0]);
+ await page.locator('#card-domain').selectOption('4');
+ const domainCards=lessons.filter(l=>l.domain===4);
+ const filteredCards=[];
+ for(let i=0;i<domainCards.length;i++){filteredCards.push(await page.locator('.flashcard h2').innerText());await page.locator('[data-action="card-next"]').click();}
+ assert.deepEqual([...filteredCards].sort(),domainCards.map(l=>l.title).sort());
  await route('practice');await page.locator('#quiz-domain').selectOption('5');
  await page.locator('[data-action="quiz-start"]').click();
  for(let i=0;i<5;i++){await page.locator('[data-action="quiz-answer"]').first().click();await page.locator('[data-action="quiz-next"]').click();}
  assert.match(await page.locator('main').innerText(),/Session complete/i);
+ for(const count of [10,20]){
+  await page.locator('[data-action="quiz-reset"]').click();
+  await page.locator('#quiz-length').selectOption(String(count));
+  await page.locator('[data-action="quiz-start"]').click();
+  const questions=[];
+  for(let i=0;i<count;i++){
+   questions.push(await page.locator('.learning-panel h2').innerText());
+   await page.locator('[data-action="quiz-answer"]').first().click();
+   await page.locator('[data-action="quiz-next"]').click();
+  }
+  assert.equal(new Set(questions).size,count);
+  assert.match(await page.locator('main').innerText(),/Session complete/i);
+ }
  // Force storage failure in this isolated test context; no personal browser data is touched.
  await route('lesson/ipv6');
  await page.evaluate(()=>{Storage.prototype.setItem=function(){throw new DOMException('Test quota failure','QuotaExceededError');};});
@@ -78,17 +101,17 @@ try {
  await section(2);assert.match(await page.locator('#note-status').innerText(),/Not saved/);
  await page.locator('[data-action="clear-note"]').click();assert.match(await page.locator('#toast').innerText(),/only for this session/);
  await page.reload();assert.notEqual(await page.locator('#lesson-notes').inputValue(),'Temporary note');
- await section(1);await page.screenshot({path:'audit/2026-09-17-desktop.png',fullPage:true});
+ await section(1);await page.screenshot({path:'audit/2026-09-23-desktop.png',fullPage:true});
  await page.setViewportSize({width:390,height:844});await route('course');
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  await page.locator('[data-action="menu"]').click();assert.equal(await page.locator('.menu-btn').getAttribute('aria-expanded'),'true');
  await page.keyboard.press('Escape');assert.equal(await page.locator('.menu-btn').getAttribute('aria-expanded'),'false');
  for(const hash of ['dashboard','tools','flashcards','ports','practice','progress','saved','resources']){await route(hash);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),hash);}
- for(const id of ['foundations','containers-vdi','mobile-management','display-types']){await route(`lesson/${id}`);for(let n=0;n<5;n++){await section(n);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${id} section ${n}`);}}
+ for(const id of ['poe','wireless-standards','firmware-boot','cloud-metering']){await route(`lesson/${id}`);for(let n=0;n<5;n++){await section(n);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${id} section ${n}`);}}
  await route('lesson/display-types');await section(3);
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  await page.locator('[data-action="theme"]').click();assert.ok(await page.locator('html.dark').count());
- await page.screenshot({path:'audit/2026-09-17-mobile.png',fullPage:true});
+ await page.screenshot({path:'audit/2026-09-23-mobile.png',fullPage:true});
  assert.deepEqual(errors,[]);
  console.log(JSON.stringify({passed:true,lessons:lessons.length,lessonSections:lessons.length*5,lessonChecks:lessons.length*3,consoleErrors:errors,viewports:['1440x1000','390x844']}));
 }finally{await browser.close();}

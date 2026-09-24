@@ -1,6 +1,6 @@
 # Core One — CompTIA A+ mentor
 
-An independent Core 1 (220-1201 V15) study app with **43 guided lessons and 129 original questions**. Every lesson includes English and Taglish explanations, an analogy, learning goals, guided teaching, vocabulary, a worked paper lab, and three knowledge checks. No account or backend is required.
+An independent Core 1 (220-1201 V15) study app with **47 guided lessons and 141 original questions**. Every lesson includes English and Taglish explanations, an analogy, learning goals, guided teaching, vocabulary, a worked paper lab, and three knowledge checks. No account or backend is required.
 
 ## Run
 
@@ -30,7 +30,7 @@ Optional environment variables:
 - `BROWSER_EXECUTABLE`: path to a compatible Chromium executable.
 - `PREVIEW_URL`: preview address; defaults to http://127.0.0.1:4173/.
 
-The audit renders all five sections of every lesson, completes all 129 checks, and exercises notes, bookmarks, search, ports, flashcards, practice, storage failure, mobile navigation, and dark mode.
+The audit renders all five sections of every lesson, completes all 141 checks, and exercises notes, bookmarks, search, ports, flashcards, practice, storage failure, mobile navigation, and dark mode.
 
 ## Learning features
 
@@ -39,9 +39,9 @@ The audit renders all five sections of every lesson, completes all 129 checks, a
 - Five lesson sections: Understand, Visualize, Apply, Exam essentials, and Knowledge check.
 - Direct question navigation and resume at the first unanswered check of the current attempt.
 - Bookmarks, autosaved field notes, missed-question review, and JSON progress export.
-- Flashcards with domain filters and manual self-ratings.
+- Flashcards with domain filters, a shuffled deck that visits every card before repeating, and manual self-ratings.
 - Port recall accepts equivalent complete lists and ranges; port search opens the matching exercise.
-- Randomized practice sessions of up to five questions, with domain or missed-question selection.
+- Randomized practice sessions of 5, 10, or 20 questions (limited by the available bank), with domain or missed-question selection.
 - Desktop and mobile navigation, swipe controls, keyboard section navigation, light/dark themes, and reduced-motion support.
 
 Press / outside an interactive control to focus search. Escape dismisses search and the mobile navigation. Arrow keys move between lesson sections or flashcards when focus is outside interactive controls.
@@ -53,6 +53,7 @@ Press / outside an interactive control to focus search. Escape dismisses search 
 - `src/data.js`: stable lesson IDs and ordering, domain metadata, protocol reference, and source links.
 - `src/foundation-workshops.js`: guided expansions for the original 15 short lessons.
 - `src/extended-lessons.js`: containers/VDI and managed mobile devices.
+- `src/infrastructure-lessons.js`: PoE, wireless standards, UEFI, and cloud metering.
 - Other `src/*lessons.js` and `src/*workshops.js`: original topic-specific teaching and scenarios.
 - `src/checks.js`: three questions per lesson and stable answer rotation.
 - `src/learning.js`: search, practice selection, check resume, and port matching.
@@ -70,7 +71,7 @@ The named troubleshooting methodology is supporting practice, explicitly exclude
 
 ## Data
 
-Progress, notes, bookmarks, and ratings remain in this browser. Clearing site data removes them. JSON export is available; import and cross-device synchronization are not implemented. When storage writes fail, the app retains changes only for the current session and reports that they were not saved. Existing lesson IDs and the original 123 questions remain stable through this expansion.
+Progress, notes, bookmarks, and ratings remain in this browser. Clearing site data removes them. JSON export is available; import and cross-device synchronization are not implemented. When storage writes fail, the app retains changes only for the current session and reports that they were not saved. Existing lesson IDs and question ordering remain stable when new lessons are appended.
 
 ## Sources
 
@@ -83,3 +84,7 @@ Progress, notes, bookmarks, and ratings remain in this browser. Clearing site da
 - [Professor Messer’s 220-1201 course](https://www.professormesser.com/free-a-plus-training/220-1201/220-1201-video/220-1201-training-course/), linked as a companion resource.
 
 Teaching and practice questions are original. Core One is not affiliated with or endorsed by CompTIA or Professor Messer. Device-specific service work depends on the manufacturer’s documentation.
+
+## September 23 expansion
+
+Added four guided lessons and 12 original checks. Existing 43 lesson IDs and 129 questions retain their ordering. Practice now supports 5, 10, and 20 questions; Shuffle reorders the deck rather than jumping to a random card. See `audit/2026-09-23-audit.md` for sources and verification.

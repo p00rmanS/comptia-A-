@@ -1,4 +1,4 @@
-import {matchesLesson,missedChecks,practicePool,matchesPorts,completedCount,nextCheckIndex} from '../src/learning.js';
+import {matchesLesson,missedChecks,practicePool,matchesPorts,completedCount,nextCheckIndex,shuffled,practiceSession} from '../src/learning.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {lessons,domains,ports,questionFor} from '../src/data.js';
@@ -7,12 +7,12 @@ import {readState,accuracy,streak,localDate} from '../src/storage.js';
 
 test('curriculum has complete, unique lessons and balanced domain metadata',()=>{
  assert.equal(domains.reduce((n,d)=>n+d.weight,0),100);
- assert.equal(new Set(lessons.map(l=>l.id)).size,43);
+ assert.equal(new Set(lessons.map(l=>l.id)).size,47);
  for(const d of domains)assert.ok(lessons.some(l=>l.domain===d.id));
  for(const l of lessons){assert.ok(l.title.length>3);for(const field of ['big','taglish','analogy','exam','tech','explanation','tip'])assert.ok(l[field]?.length>15,`${l.id}: ${field}`);assert.ok(l.flow.length>=3);}
 });
-test('all 129 original checks have a single correct choice after rotation',()=>{
- assert.equal(questionCount,129);
+test('all 141 original checks have a single correct choice after rotation',()=>{
+ assert.equal(questionCount,141);
  for(const l of lessons){assert.equal(checksFor(l).length,3);for(const check of checksFor(l)){const q=questionFor(check);assert.equal(q.choices.filter(c=>c.correct).length,1);assert.equal(q.choices.find(c=>c.correct).text,check.options[0]);assert.equal(new Set(check.options).size,3);assert.ok(check.explanation.length>40);}}
 });
 test('port scope includes NetBIOS and does not omit paired service ports',()=>{
@@ -38,7 +38,7 @@ test('streak uses local calendar days and permits an unfinished current day',()=
 });
 
  test('guided lessons include substantive teaching, labs and distinct checks',()=>{
- const guided=lessons.filter(l=>l.steps);assert.equal(guided.length,43);
+ const guided=lessons.filter(l=>l.steps);assert.equal(guided.length,47);
  for(const l of guided){assert.equal(l.goals.length,3);assert.ok(l.steps.length>=4);assert.ok(l.terms.length>=3);assert.ok(l.lab.task.length>60);assert.ok(l.lab.answer.length>100);assert.equal(new Set(checksFor(l).map(q=>q.question)).size,3);}
  });
 
@@ -52,7 +52,7 @@ test('search finds expanded vocabulary and lab content',()=>{
  assert.equal(matchesLesson(lessons[0],'nonexistentwordxyz'),false);
 });
 test('practice includes all checks and reviews the exact missed question',()=>{
- assert.equal(practicePool(lessons,checksFor,[],'0').length,129);
+ assert.equal(practicePool(lessons,checksFor,[],'0').length,141);
  const history=[{id:'dns',context:'lesson',check:0,correct:false},{id:'dns',context:'lesson',check:1,correct:true}];
  assert.deepEqual(missedChecks(history,'dns'),[0]);
  const pool=practicePool(lessons,checksFor,history,'wrong');assert.equal(pool.length,1);assert.equal(pool[0].checkSlot,0);
@@ -113,3 +113,21 @@ test('every related lesson exists and all new checks participate in search and d
    assert.ok(l.lab.task.length>60,l.id);assert.ok(l.lab.answer.length>100,l.id);
   }
  });
+
+test('shuffling keeps every card exactly once and preserves the source order',()=>{
+ const source=['a','b','c','d'];const result=shuffled(source,()=>0);
+ assert.deepEqual(source,['a','b','c','d']);assert.deepEqual(result,['b','c','d','a']);
+ assert.deepEqual([...result].sort(),source);assert.deepEqual(shuffled([]),[]);
+ assert.deepEqual(shuffled(['only']),['only']);
+});
+test('practice lengths cap at available unique questions and accept only supported sizes',()=>{
+ const pool=practicePool(lessons,checksFor,[],'0');
+ for(const count of [5,10,20]){const session=practiceSession(pool,String(count),()=>0.5);assert.equal(session.length,count);assert.equal(new Set(session.map(q=>q.id+':'+q.checkSlot)).size,count);}
+ assert.equal(practiceSession(pool,99).length,5);
+ assert.equal(practiceSession(pool.slice(0,2),20).length,2);
+ assert.equal(practiceSession([],20).length,0);
+});
+test('infrastructure lessons append without moving existing lessons and join every practice flow',()=>{
+ const ids=['poe','wireless-standards','firmware-boot','cloud-metering'];
+ ids.forEach((id,i)=>{const l=lessons.find(l=>l.id===id);assert.equal(l.number,44+i);assert.equal(practicePool(lessons,checksFor,[],String(l.domain)).filter(q=>q.id===id).length,3);assert.ok(matchesLesson(l,l.terms[0][0]));});
+});
