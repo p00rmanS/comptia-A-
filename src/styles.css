@@ -25,3 +25,14 @@ main:focus{outline:none}
 .course-outline a[aria-current="page"]{font-weight:700;text-decoration:underline}
 .recap-list{list-style:disc;padding-left:1.4rem;margin:1rem 0 1.5rem;line-height:1.8}
 .related-lessons{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+
+.course-switch{display:flex;gap:8px;margin:0 0 18px;}.course-switch .chip{flex:1;text-align:center;}
+/* Keep section and lesson navigation within reach while reading. */
+.lesson-navigation{position:sticky;bottom:12px;z-index:20;margin-top:20px;padding:10px 14px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 4px 20px #0001}
+.lesson-jumps{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.lesson-jumps .btn{font-size:12px;min-height:44px}
+.lesson-jumps .text-link{font-size:12px}
+.lesson-navigation .lesson-controls{margin-top:8px}
+.navigation-hint{text-align:center;font-size:12px;color:var(--muted)}
+.navigation-hint span{display:block;font-size:10px;margin-top:3px}
+@media(max-width:760px){.lesson-navigation{bottom:calc(78px + env(safe-area-inset-bottom));padding:8px;margin-top:16px}.lesson-navigation .btn{font-size:11px;padding:10px 8px;min-height:44px}.lesson-navigation .btn svg{width:16px;height:16px}.lesson-jumps{gap:5px}.lesson-jumps .text-link{font-size:11px}.navigation-hint span{display:none}.lesson-navigation .lesson-controls{gap:5px}}

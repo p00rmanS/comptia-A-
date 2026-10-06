@@ -1,6 +1,16 @@
 # Core One — CompTIA A+ mentor
 
-An independent Core 1 (220-1201 V15) study app with **65 guided lessons and 195 original questions**. Every lesson includes English and Taglish explanations, an analogy, learning goals, guided teaching, vocabulary, a worked paper lab, and three knowledge checks. No account or backend is required.
+## Core 2 starter course
+
+Select **Core 2** in the sidebar (open the menu on mobile), or open `?core=2#dashboard`. Core 1 remains the default. Each exam keeps separate browser progress, notes, bookmarks, flashcard ratings, and practice history.
+
+Core 2 (220-1202) contains **30 guided English/Taglish workshops and 90 original checks**. Each lesson has vocabulary, an analogy, a concept flow, a worked paper lab, and explanations for all choices. Flashcards, search, practice, review, and progress export use the selected course.
+
+The October expansion adds OS installation, filesystems, Windows tools and commands, Linux basics, share/NTFS permissions, phishing, malware response, Windows recovery, mobile app troubleshooting, backup restore chains, and change management. The Resources page links four learning sequences and the teaching references. This course covers selected concepts across all four Core 2 domains; it does not claim full objective coverage. The October 4 batch adds Windows editions/settings, client networking, macOS, cloud productivity, wireless/browser security, encryption, browser diagnosis, remote support, evidence/privacy, and scripting. Hardware safety, environmental procedures, and further troubleshooting scenarios remain to expand. Core 1’s ports trainer remains in Core 1.
+
+Core 2 content lives in `src/core2-data.js` and the seven `src/core2-*-lessons.js` modules; `src/course.js` selects the course. New content is appended to keep existing question identities and answer rotation stable. `tests/core2.test.js` validates content, search/practice integration, compatibility, and storage isolation. `audit/core2-browser.mjs` checks desktop/mobile flows with an isolated Edge browser; set `PLAYWRIGHT_MODULE` and optionally `PREVIEW_URL` before running it.
+
+An independent Core 1 (220-1201 V15) study app with **67 guided lessons and 201 original questions**. Every lesson includes English and Taglish explanations, an analogy, learning goals, guided teaching, vocabulary, a worked paper lab, and three knowledge checks. No account or backend is required.
 
 ## Run
 
@@ -30,7 +40,7 @@ Optional environment variables:
 - `BROWSER_EXECUTABLE`: path to a compatible Chromium executable.
 - `PREVIEW_URL`: preview address; defaults to http://127.0.0.1:4173/.
 
-The audit renders all five sections of every lesson, completes all 195 checks, and exercises notes, bookmarks, search, ports, flashcards, practice, storage failure, mobile navigation, and dark mode.
+The audit renders all five sections of every lesson, completes all 201 checks, and exercises notes, bookmarks, search, ports, flashcards, practice, storage failure, mobile navigation, and dark mode.
 
 ## Learning features
 
@@ -68,7 +78,7 @@ The course teaches selected concepts across all five Core 1 domains. It does not
 
 Completion records answering all three lesson checks, not necessarily answering correctly. Repeated answers count in practice accuracy. The app does not predict an official scaled score or exam readiness. Flashcard ratings are manual; scheduled spaced repetition is not implemented.
 
-The named troubleshooting methodology is supporting practice, explicitly excluded as a formal V15 objective. Full A+ certification requires Core 1 and Core 2; this app focuses on Core 1.
+The named troubleshooting methodology is supporting practice, explicitly excluded as a formal V15 objective. Full A+ certification requires Core 1 and Core 2; this app includes separate courses for both exams.
 
 ## Data
 
@@ -100,3 +110,7 @@ Added 18 guided workshops and 54 questions. Start with these sequences:
 - Mobile and cloud: SIM/eSIM → Location services → Camera/microphone → Virtual networking → Sync versus backup.
 
 Every new lesson contains a worked paper exercise and three original questions with explanations. Existing question identities and answer order are checked against the pre-expansion course to preserve saved progress. See audit/2026-09-24-audit.md for scope and sources.
+
+## October 6 expansion
+
+Added Ethernet link diagnosis and transfer-speed reasoning to Core 1, plus event-log diagnosis and update planning to Core 2. Each includes a worked paper lab and three original questions. Existing question identities and rotated choices are preserved for all previous 65 Core 1 and 28 Core 2 lessons. Lesson navigation stays visible while reading, with previous/next lesson links and Alt + arrow keyboard shortcuts. See audit/2026-10-06-expansion.md for verification.

@@ -1,8 +1,8 @@
 export const STORAGE_KEY='core-one-mentor-v1';
 export function freshState(){return {completed:[],answers:[],bookmarks:[],notes:{},cards:{},dates:[],lastLesson:'foundations',sections:{},theme:'light',goal:25};}
-export function readState(storage){
+export function readState(storage,key=STORAGE_KEY){
  try{
-  const p=JSON.parse(storage.getItem(STORAGE_KEY));if(!p||typeof p!=='object'||Array.isArray(p))return freshState();
+  const p=JSON.parse(storage.getItem(key));if(!p||typeof p!=='object'||Array.isArray(p))return freshState();
   const s=freshState();
   for(const k of ['completed','bookmarks','dates'])if(Array.isArray(p[k]))s[k]=[...new Set(p[k].filter(v=>typeof v==='string'))];
   if(Array.isArray(p.answers))s.answers=p.answers.filter(a=>a&&typeof a==='object'&&typeof a.id==='string'&&typeof a.correct==='boolean'&&Number.isFinite(a.time)&&Number.isInteger(a.domain)&&a.domain>=1&&a.domain<=5&&['lesson','lesson-previous','practice','ports'].includes(a.context)&&(a.check==null||(Number.isInteger(a.check)&&a.check>=0&&a.check<=2)));

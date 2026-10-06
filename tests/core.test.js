@@ -8,12 +8,12 @@ import {readState,accuracy,streak,localDate} from '../src/storage.js';
 
 test('curriculum has complete, unique lessons and balanced domain metadata',()=>{
  assert.equal(domains.reduce((n,d)=>n+d.weight,0),100);
- assert.equal(new Set(lessons.map(l=>l.id)).size,65);
+ assert.equal(new Set(lessons.map(l=>l.id)).size,67);
  for(const d of domains)assert.ok(lessons.some(l=>l.domain===d.id));
  for(const l of lessons){assert.ok(l.title.length>3);for(const field of ['big','taglish','analogy','exam','tech','explanation','tip'])assert.ok(l[field]?.length>15,`${l.id}: ${field}`);assert.ok(l.flow.length>=3);}
 });
-test('all 195 original checks have a single correct choice after rotation',()=>{
- assert.equal(questionCount,195);
+test('all 201 original checks have a single correct choice after rotation',()=>{
+ assert.equal(questionCount,201);
  for(const l of lessons){assert.equal(checksFor(l).length,3);for(const check of checksFor(l)){const q=questionFor(check);assert.equal(q.choices.filter(c=>c.correct).length,1);assert.equal(q.choices.find(c=>c.correct).text,check.options[0]);assert.equal(new Set(check.options).size,3);assert.ok(check.explanation.length>40);}}
 });
 test('port scope includes NetBIOS and does not omit paired service ports',()=>{
@@ -39,7 +39,7 @@ test('streak uses local calendar days and permits an unfinished current day',()=
 });
 
  test('guided lessons include substantive teaching, labs and distinct checks',()=>{
- const guided=lessons.filter(l=>l.steps);assert.equal(guided.length,65);
+ const guided=lessons.filter(l=>l.steps);assert.equal(guided.length,67);
  for(const l of guided){assert.equal(l.goals.length,3);assert.ok(l.steps.length>=4);assert.ok(l.terms.length>=3);assert.ok(l.lab.task.length>60);assert.ok(l.lab.answer.length>100);assert.equal(new Set(checksFor(l).map(q=>q.question)).size,3);}
  });
 
@@ -53,7 +53,7 @@ test('search finds expanded vocabulary and lab content',()=>{
  assert.equal(matchesLesson(lessons[0],'nonexistentwordxyz'),false);
 });
 test('practice includes all checks and reviews the exact missed question',()=>{
- assert.equal(practicePool(lessons,checksFor,[],'0').length,195);
+ assert.equal(practicePool(lessons,checksFor,[],'0').length,201);
  const history=[{id:'dns',context:'lesson',check:0,correct:false},{id:'dns',context:'lesson',check:1,correct:true}];
  assert.deepEqual(missedChecks(history,'dns'),[0]);
  const pool=practicePool(lessons,checksFor,history,'wrong');assert.equal(pool.length,1);assert.equal(pool[0].checkSlot,0);
@@ -134,7 +134,7 @@ test('infrastructure lessons append without moving existing lessons and join eve
 });
 
 test('the new teaching batch supplies 18 complete lessons across all five domains',()=>{
- const added=lessons.slice(47);assert.equal(added.length,18);
+ const added=lessons.slice(47,65);assert.equal(added.length,18);
  assert.deepEqual([...new Set(added.map(l=>l.domain))].sort(),[1,2,3,4,5]);
  for(const [index,l] of added.entries()){
   assert.equal(l.number,48+index);assert.equal(l.summary.length,3);
